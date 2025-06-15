@@ -11,12 +11,20 @@ import java.util.List;
 @Table(name = "users")
 @Entity(name = "users")
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+
     private String login;
+
     private String password;
-    private userRole role;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
+    public User() {
+    }
 
     public User(String login, String password, UserRole role){
         this.login = login;
@@ -26,11 +34,10 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(this.role == userRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
-    }
-
-    public User() {
+        if(this.role == UserRole.ADMIN)
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        else
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     public String getId() {
@@ -58,11 +65,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public userRole getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(userRole role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 

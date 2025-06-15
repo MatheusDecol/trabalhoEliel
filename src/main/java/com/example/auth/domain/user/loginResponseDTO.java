@@ -5,7 +5,7 @@ public class loginResponseDTO {
     private String username;
     private String role;
 
-    public loginResponseDTO(String token) {
+    public loginResponseDTO(String token, String username, String role) {
         this.token = token;
         this.username = username;
         this.role = role;

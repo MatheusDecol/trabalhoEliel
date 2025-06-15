@@ -2,8 +2,11 @@ package com.example.auth.domain.user;
 
 public class authDTO {
 
-   private String emailUsuario;
-   private String password;
+    private String emailUsuario;
+    private String password;
+
+    public authDTO() {
+    }
 
     public authDTO(String emailUsuario, String password) {
         this.emailUsuario = emailUsuario;

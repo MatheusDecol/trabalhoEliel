@@ -4,8 +4,9 @@ public class registerDTO {
 
     private String login;
     private String password;
-    UserRole role;
+    private UserRole role;
 
+    public registerDTO() {}
 
     public registerDTO(String login, String password, UserRole role) {
         this.login = login;
