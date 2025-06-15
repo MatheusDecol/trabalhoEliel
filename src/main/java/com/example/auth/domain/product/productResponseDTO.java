@@ -1,21 +1,24 @@
 package com.example.auth.domain.product;
 
 public class productResponseDTO {
+
     private String id;
-    private String name;
-    private Integer price;
+    private String productName;
+    private Integer productValue;
 
-    public productResponseDTO() {
-    }
 
-    public productResponseDTO(String id, String name, Integer price) {
+    public ProductResponseDTO() {}
+
+    public ProductResponseDTO(String id, String productName, Integer productValue) {
         this.id = id;
-        this.name = name;
-        this.price = price;
+        this.productName = productName;
+        this.productValue = productValue;
     }
 
-    public productResponseDTO(Product product) {
-        this(product.getId(), product.getName(), product.getPrice());
+    public ProductResponseDTO(Product product) {
+        this.id = product.getId();
+        this.productName = product.getName();
+        this.productValue = product.getPrice();
     }
 
     public String getId() {
@@ -26,19 +29,19 @@ public class productResponseDTO {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public Integer getPrice() {
-        return price;
+    public Integer getProductValue() {
+        return productValue;
     }
 
-    public void setPrice(Integer price) {
-        this.price = price;
+    public void setProductValue(Integer productValue) {
+        this.productValue = productValue;
     }
 }

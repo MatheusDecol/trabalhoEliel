@@ -11,25 +11,28 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController()
-@RequestMapping("product")
-public class productController {
+@RestController
+@RequestMapping("/products")
+public class ProductController {
 
     @Autowired
-    productRepository repository;
+    private productRepository productRepo;
 
-    @PostMapping
-    public ResponseEntity postProduct(@RequestBody @Valid ProductRequestDTO body){
-        Product newProduct = new Product(body);
+    @PostMapping("/create")
+    public ResponseEntity<String> createProduct(@RequestBody @Valid ProductRequestDTO requestData) {
+        var product = new Product(requestData);
+        productRepo.save(product);
 
-        this.repository.save(newProduct);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Produto criado com sucesso.");
     }
 
-    @GetMapping
-    public ResponseEntity getAllProducts(){
-        List<ProductResponseDTO> productList = this.repository.findAll().stream().map(ProductResponseDTO::new).toList();
+    @GetMapping("/list")
+    public ResponseEntity<List<ProductResponseDTO>> fetchAllProducts() {
+        var products = productRepo.findAll()
+                .stream()
+                .map(ProductResponseDTO::new)
+                .toList();
 
-        return ResponseEntity.ok(productList);
+        return ResponseEntity.ok(products);
     }
 }

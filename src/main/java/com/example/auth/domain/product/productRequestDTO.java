@@ -3,7 +3,7 @@ package com.example.auth.domain.product;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class productRequestDTO {
+public class ProductRequestDTO {
 
         @NotBlank
         private String name;
@@ -11,10 +11,9 @@ public class productRequestDTO {
         @NotNull
         private Integer price;
 
-        public productRequestDTO() {
-        }
+        public ProductRequestDTO() {}
 
-        public productRequestDTO(String name, Integer price) {
+        public ProductRequestDTO(String name, Integer price) {
                 this.name = name;
                 this.price = price;
         }
