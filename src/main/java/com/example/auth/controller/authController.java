@@ -1,53 +1,52 @@
 package com.example.auth.controller;
 
-import com.example.auth.domain.user.authDTO;
-import com.example.auth.domain.user.loginResponseDTO;
-import com.example.auth.domain.user.registerDTO;
-import com.example.auth.domain.user.User;
-import com.example.auth.security.tokenService;
+import com.example.auth.domain.user.*;
 import com.example.auth.repository.userRepository;
+import com.example.auth.security.tokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("auth")
-public class authController {
+@RequestMapping("/auth")
+public class AuthenticationController {
+
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private AuthenticationManager authManager;
+
     @Autowired
-    private userRepository repository;
+    private userRepository userRepo;
+
     @Autowired
-    private tokenService tokenService;
+    private tokenService tokenUtil;
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody @Valid authDTO data){
-        var usernamePassword = new UsernamePasswordAuthenticationToken(data.getEmailUsuario(), data.getPassword());
-        var auth = this.authenticationManager.authenticate(usernamePassword);
+    public ResponseEntity<loginResponseDTO> login(@RequestBody @Valid authDTO credentials) {
+        var loginData = new UsernamePasswordAuthenticationToken(
+                credentials.getEmailUsuario(), credentials.getPassword());
 
-        var token = tokenService.generateToken((User) auth.getPrincipal());
+        var authenticated = authManager.authenticate(loginData);
+        var user = (User) authenticated.getPrincipal();
+        var jwt = tokenUtil.generateToken(user);
 
-        return ResponseEntity.ok(new loginResponseDTO(token));
+        return ResponseEntity.ok(new loginResponseDTO(jwt));
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody @Valid registerDTO data) {
-        if (this.repository.findByLogin(data.getLogin()) != null) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<String> register(@RequestBody @Valid registerDTO newUserData) {
+        var existingUser = userRepo.findByLogin(newUserData.getLogin());
+        if (existingUser != null) {
+            return ResponseEntity.status(409).body("Login já está em uso.");
         }
 
-        String encryptedPassword = new BCryptPasswordEncoder().encode(data.getPassword());
-        User newUser = new User(data.getLogin(), encryptedPassword, data.getRole());
+        String hashedPassword = new BCryptPasswordEncoder().encode(newUserData.getPassword());
+        var user = new User(newUserData.getLogin(), hashedPassword, newUserData.getRole());
 
-        this.repository.save(newUser);
-
-        return ResponseEntity.ok().build();
+        userRepo.save(user);
+        return ResponseEntity.ok("Usuário registrado com sucesso.");
     }
 }
