@@ -13,25 +13,28 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Service
-public class tokenService {
-    @Value("${api.security.token.secret}")
-    private String secret;
+public class TokenService {
 
-    public String generateToken(User user){
-        try{
+    private final String secret;
+
+    public TokenService(@Value("${api.security.token.secret}") String secret) {
+        this.secret = secret;
+    }
+
+    public String generateToken(User user) {
+        try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            String token = JWT.create()
+            return JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getLogin())
-                    .withExpiresAt(genExpirationDate())
+                    .withExpiresAt(generateExpirationDate())
                     .sign(algorithm);
-            return token;
         } catch (JWTCreationException exception) {
-            throw new RuntimeException("Error while generating token", exception);
+            throw new RuntimeException("Erro ao gerar o token JWT", exception);
         }
     }
 
-    public String validateToken(String token){
+    public String validateToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)
@@ -39,12 +42,13 @@ public class tokenService {
                     .build()
                     .verify(token)
                     .getSubject();
-        } catch (JWTVerificationException exception){
-            return "";
+        } catch (JWTVerificationException exception) {
+            return null;
         }
     }
 
-    private Instant genExpirationDate(){
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
-    }
+    private Instant generateExpirationDate() {
+        return LocalDateTime.now()
+                .plusHours(2)
+                .toInstant(ZoneOffset.of("-03:00"));
 }
